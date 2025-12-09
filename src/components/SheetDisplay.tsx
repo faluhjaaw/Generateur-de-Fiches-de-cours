@@ -24,8 +24,8 @@ export function SheetDisplay({ content, formData, language, onDownload, onNewShe
 
   return (
     <div className="space-y-6" dir={isRtl ? 'rtl' : 'ltr'}>
-      <div className="bg-white rounded-lg shadow-lg p-8" id="sheet-content">
-        <div className="border-b-4 border-blue-600 pb-6 mb-8">
+      <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-100 p-8" id="sheet-content">
+        <div className="pb-6 mb-8 border-b-4 border-blue-600">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">{formData.lecon}</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div>
@@ -79,21 +79,21 @@ export function SheetDisplay({ content, formData, language, onDownload, onNewShe
       <div className="grid grid-cols-3 gap-4">
         <button
           onClick={onNewSheet}
-          className="flex items-center justify-center gap-2 bg-gray-100 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-200 transition-colors font-medium border border-gray-300"
+          className="flex items-center justify-center gap-2 bg-white text-gray-700 py-3 px-6 rounded-xl hover:bg-gray-50 transition-all duration-200 font-medium border-2 border-gray-300 hover:border-gray-400 shadow-sm hover:shadow"
         >
           <ArrowLeft className="w-5 h-5" />
           {language === 'ar' ? 'رجوع' : 'Retour'}
         </button>
         <button
           onClick={onDownload}
-          className="flex items-center justify-center gap-2 bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors font-medium"
+          className="flex items-center justify-center gap-2 bg-green-600 text-white py-3 px-6 rounded-xl hover:bg-green-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
         >
           <Download className="w-5 h-5" />
           {t.download}
         </button>
         <button
           onClick={onNewSheet}
-          className="flex items-center justify-center gap-2 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          className="flex items-center justify-center gap-2 bg-blue-600 text-white py-3 px-6 rounded-xl hover:bg-blue-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
         >
           <FileText className="w-5 h-5" />
           {t.newSheet}

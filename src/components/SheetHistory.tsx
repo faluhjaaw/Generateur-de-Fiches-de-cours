@@ -102,7 +102,7 @@ export function SheetHistory({ language, onSelectSheet, onBack }: SheetHistoryPr
         </h3>
         <button
           onClick={onBack}
-          className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-white border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 shadow-sm hover:shadow"
         >
           <ArrowLeft className="w-4 h-4" />
           <span className="font-medium">{language === 'ar' ? 'رجوع' : 'Retour'}</span>
@@ -114,7 +114,7 @@ export function SheetHistory({ language, onSelectSheet, onBack }: SheetHistoryPr
           <div
             key={sheet.id}
             onClick={() => onSelectSheet(sheet)}
-            className="p-4 bg-white border border-gray-200 rounded-lg hover:border-blue-400 hover:shadow-md transition-all cursor-pointer"
+            className="p-5 bg-white/90 backdrop-blur-sm border-2 border-gray-200 rounded-xl hover:border-blue-400 hover:shadow-lg transition-all duration-200 cursor-pointer transform hover:-translate-y-1"
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">

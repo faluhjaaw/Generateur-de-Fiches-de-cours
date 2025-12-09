@@ -256,43 +256,54 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50" dir={isRtl ? 'rtl' : 'ltr'}>
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex justify-between items-start mb-8">
-            <div className="flex items-center gap-4">
-              <Logo className="w-16 h-16" />
+    <div className="min-h-screen bg-blue-50" dir={isRtl ? 'rtl' : 'ltr'}>
+      {/* Header avec effet glassmorphism */}
+      <div className="sticky top-0 z-50 backdrop-blur-md bg-white/90 border-b border-blue-100 shadow-sm">
+        <div className="container mx-auto px-4 py-3 md:py-4">
+          <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
+            <div className="flex items-center gap-2 md:gap-3">
+              <Logo className="w-10 h-10 md:w-12 md:h-12" />
               <div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">{t.title}</h1>
-                <p className="text-gray-600">{t.subtitle}</p>
+                <h1 className="text-xl md:text-2xl font-bold text-blue-600">
+                  {t.title}
+                </h1>
+                <p className="text-xs md:text-sm text-gray-600">{t.subtitle}</p>
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 w-full sm:w-auto">
               <button
                 onClick={() => setShowHistory(!showHistory)}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex items-center justify-center gap-1 md:gap-2 px-2 md:px-4 py-2 bg-white border border-blue-200 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 shadow-sm flex-1 sm:flex-initial"
               >
-                <History className="w-5 h-5" />
-                <span className="font-medium">{language === 'ar' ? 'السجل' : 'Historique'}</span>
+                <History className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
+                <span className="font-medium text-gray-700 text-sm md:text-base">{language === 'ar' ? 'السجل' : 'Historique'}</span>
               </button>
               <button
                 onClick={toggleLanguage}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex items-center justify-center gap-1 md:gap-2 px-2 md:px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex-1 sm:flex-initial"
               >
-                <Languages className="w-5 h-5" />
-                <span className="font-medium">{language === 'fr' ? 'العربية' : 'Français'}</span>
+                <Languages className="w-4 h-4 md:w-5 md:h-5" />
+                <span className="font-medium text-sm md:text-base">{language === 'fr' ? 'العربية' : 'Français'}</span>
               </button>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-5xl mx-auto">
 
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-              {error}
+            <div className="mb-6 p-4 bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-xl text-red-700 shadow-sm">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">⚠️</span>
+                <span>{error}</span>
+              </div>
             </div>
           )}
 
           {showHistory ? (
-            <div className="bg-white rounded-lg shadow-lg p-8">
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-100 p-8">
               <SheetHistory
                 language={language}
                 onSelectSheet={handleSelectHistorySheet}
@@ -300,7 +311,7 @@ function App() {
               />
             </div>
           ) : !generatedContent ? (
-            <div className="bg-white rounded-lg shadow-lg p-8">
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-100 p-8">
               <SheetForm
                 onSubmit={handleGenerate}
                 isGenerating={isGenerating}
