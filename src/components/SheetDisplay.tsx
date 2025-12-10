@@ -16,15 +16,25 @@ export function SheetDisplay({ content, formData, language, onDownload, onNewShe
 
   // Calculer la durée totale en minutes
   const getTotalMinutes = (dureeStr: string): number => {
-    const matches = dureeStr.match(/(\d+)/g);
-    if (!matches) return 60; // Valeur par défaut
+    if (!dureeStr) return 60; // Valeur par défaut
 
-    if (dureeStr.includes('ساعة') || dureeStr.includes('heure')) {
+    // Cas : "1 heure 30", "1h30", "1 ساعة 30", etc.
+    if (dureeStr.includes('ساعة') || dureeStr.includes('heure') || dureeStr.includes('h')) {
+      const matches = dureeStr.match(/(\d+)/g);
+      if (!matches) return 60;
+
       const heures = parseInt(matches[0]);
       const minutes = matches.length > 1 ? parseInt(matches[1]) : 0;
       return heures * 60 + minutes;
     }
-    return parseInt(matches[0]); // Si c'est déjà en minutes
+
+    // Cas : "30 minutes", "45 دقيقة", etc.
+    const matches = dureeStr.match(/(\d+)/g);
+    if (matches) {
+      return parseInt(matches[0]);
+    }
+
+    return 60; // Valeur par défaut
   };
 
   const totalMinutes = getTotalMinutes(formData.duree);
@@ -49,31 +59,30 @@ export function SheetDisplay({ content, formData, language, onDownload, onNewShe
   return (
     <div className="space-y-6" dir={isRtl ? 'rtl' : 'ltr'}>
       <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-100 p-8" id="sheet-content">
-        <div className="pb-6 mb-8 border-b-4 border-blue-600">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">{formData.lecon}</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            <div>
-              <span className="font-semibold text-gray-700">{translations[language].form.niveau}:</span>
-              <span className="ml-2 text-gray-600">{formData.niveau}</span>
+        {/* En-tête principal */}
+        <div className="text-center mb-6 pb-6 border-b-2 border-gray-200">
+          <p className="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-2">
+            {formData.activite} - {formData.niveau}
+          </p>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">{formData.lecon}</h2>
+          {formData.competence_base && (
+            <p className="text-sm text-gray-600 mt-3">
+              <span className="font-semibold">{translations[language].form.competence}:</span> {formData.competence_base}
+            </p>
+          )}
+        </div>
+
+        {/* Informations de la leçon */}
+        <div className="mb-8 p-4 border-l-4 border-blue-600 bg-gray-50">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            <div className="flex items-start gap-2">
+              <span className="font-bold text-gray-700 min-w-fit">{translations[language].form.duree}:</span>
+              <span className="text-gray-600">{formData.duree}</span>
             </div>
-            <div>
-              <span className="font-semibold text-gray-700">{translations[language].form.activite}:</span>
-              <span className="ml-2 text-gray-600">{formData.activite}</span>
+            <div className="flex items-start gap-2">
+              <span className="font-bold text-gray-700 min-w-fit">{translations[language].form.objectif}:</span>
+              <span className="text-gray-600">{formData.objectif_specifique}</span>
             </div>
-            <div>
-              <span className="font-semibold text-gray-700">{translations[language].form.duree}:</span>
-              <span className="ml-2 text-gray-600">{formData.duree}</span>
-            </div>
-            {formData.competence_base && (
-              <div className="col-span-2">
-                <span className="font-semibold text-gray-700">{translations[language].form.competence}:</span>
-                <span className="ml-2 text-gray-600">{formData.competence_base}</span>
-              </div>
-            )}
-          </div>
-          <div className="mt-4">
-            <span className="font-semibold text-gray-700">{translations[language].form.objectif}:</span>
-            <p className="mt-1 text-gray-600">{formData.objectif_specifique}</p>
           </div>
         </div>
 

@@ -103,24 +103,46 @@ function App() {
           direction: ${isRtl ? 'rtl' : 'ltr'};
         }
         .header {
-          border-bottom: 4px solid #2563eb;
-          padding-bottom: 20px;
-          margin-bottom: 30px;
+          text-align: center;
+          padding-bottom: 15px;
+          margin-bottom: 20px;
+          border-bottom: 2px solid #d1d5db;
+        }
+        .header-subtitle {
+          font-size: 12px;
+          font-weight: bold;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          margin-bottom: 10px;
+          color: #6b7280;
         }
         h2 {
-          font-size: 28px;
-          margin-bottom: 15px;
+          font-size: 32px;
+          margin: 0;
           color: #111827;
+        }
+        .info-box {
+          background-color: #f9fafb;
+          border-left: 4px solid #2563eb;
+          padding: 15px;
+          margin-bottom: 20px;
         }
         .info-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 10px;
-          font-size: 14px;
-          margin-bottom: 15px;
+          gap: 12px;
+          font-size: 13px;
         }
-        .info-item { margin-bottom: 5px; }
-        .label { font-weight: bold; color: #374151; }
+        .info-item {
+          display: flex;
+          gap: 8px;
+          align-items: flex-start;
+        }
+        .label {
+          font-weight: bold;
+          color: #374151;
+          white-space: nowrap;
+        }
         .value { color: #6b7280; }
 
         table {
@@ -183,15 +205,25 @@ function App() {
 
     // Calculer la durée totale en minutes
     const getTotalMinutes = (dureeStr: string): number => {
-      const matches = dureeStr.match(/(\d+)/g);
-      if (!matches) return 60;
+      if (!dureeStr) return 60; // Valeur par défaut
 
-      if (dureeStr.includes('ساعة') || dureeStr.includes('heure')) {
+      // Cas : "1 heure 30", "1h30", "1 ساعة 30", etc.
+      if (dureeStr.includes('ساعة') || dureeStr.includes('heure') || dureeStr.includes('h')) {
+        const matches = dureeStr.match(/(\d+)/g);
+        if (!matches) return 60;
+
         const heures = parseInt(matches[0]);
         const minutes = matches.length > 1 ? parseInt(matches[1]) : 0;
         return heures * 60 + minutes;
       }
-      return parseInt(matches[0]);
+
+      // Cas : "30 minutes", "45 دقيقة", etc.
+      const matches = dureeStr.match(/(\d+)/g);
+      if (matches) {
+        return parseInt(matches[0]);
+      }
+
+      return 60; // Valeur par défaut
     };
 
     const totalMinutes = getTotalMinutes(currentFormData.duree);
@@ -239,30 +271,25 @@ function App() {
         </head>
         <body>
           <div class="header">
+            <div class="header-subtitle">${currentFormData.activite} - ${currentFormData.niveau}</div>
             <h2>${currentFormData.lecon}</h2>
+            ${currentFormData.competence_base ? `
+              <p style="font-size: 13px; color: #6b7280; margin-top: 12px;">
+                <span style="font-weight: 600;">${translations[language].form.competence}:</span> ${currentFormData.competence_base}
+              </p>
+            ` : ''}
+          </div>
+
+          <div class="info-box">
             <div class="info-grid">
-              <div class="info-item">
-                <span class="label">${translations[language].form.niveau}:</span>
-                <span class="value">${currentFormData.niveau}</span>
-              </div>
-              <div class="info-item">
-                <span class="label">${translations[language].form.activite}:</span>
-                <span class="value">${currentFormData.activite}</span>
-              </div>
               <div class="info-item">
                 <span class="label">${translations[language].form.duree}:</span>
                 <span class="value">${currentFormData.duree}</span>
               </div>
-              ${currentFormData.competence_base ? `
-                <div class="info-item">
-                  <span class="label">${translations[language].form.competence}:</span>
-                  <span class="value">${currentFormData.competence_base}</span>
-                </div>
-              ` : ''}
-            </div>
-            <div class="info-item" style="margin-top: 10px;">
-              <span class="label">${translations[language].form.objectif}:</span>
-              <div class="value" style="margin-top: 5px;">${currentFormData.objectif_specifique}</div>
+              <div class="info-item">
+                <span class="label">${translations[language].form.objectif}:</span>
+                <span class="value">${currentFormData.objectif_specifique}</span>
+              </div>
             </div>
           </div>
 
@@ -316,7 +343,10 @@ function App() {
       <div className="sticky top-0 z-50 backdrop-blur-md bg-white/90 border-b border-blue-100 shadow-sm">
         <div className="container mx-auto px-4 py-3 md:py-4">
           <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
-            <div className="flex items-center gap-2 md:gap-3">
+            <div
+              className="flex items-center gap-2 md:gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={handleNewSheet}
+            >
               <Logo className="w-10 h-10 md:w-12 md:h-12" />
               <div>
                 <h1 className="text-xl md:text-2xl font-bold text-blue-600">
