@@ -14,12 +14,36 @@ export function SheetDisplay({ content, formData, language, onDownload, onNewShe
   const t = translations[language].sheet;
   const isRtl = language === 'ar';
 
+  // Calculer la durée totale en minutes
+  const getTotalMinutes = (dureeStr: string): number => {
+    const matches = dureeStr.match(/(\d+)/g);
+    if (!matches) return 60; // Valeur par défaut
+
+    if (dureeStr.includes('ساعة') || dureeStr.includes('heure')) {
+      const heures = parseInt(matches[0]);
+      const minutes = matches.length > 1 ? parseInt(matches[1]) : 0;
+      return heures * 60 + minutes;
+    }
+    return parseInt(matches[0]); // Si c'est déjà en minutes
+  };
+
+  const totalMinutes = getTotalMinutes(formData.duree);
+
+  // Répartition proportionnelle: Révision 15%, Imprégnation 20%, Analyse 30%, Consolidation 25%, Évaluation 10%
+  const durations = {
+    revision: Math.round(totalMinutes * 0.15),
+    impregnation: Math.round(totalMinutes * 0.20),
+    analyse: Math.round(totalMinutes * 0.30),
+    consolidation: Math.round(totalMinutes * 0.25),
+    evaluation: Math.round(totalMinutes * 0.10),
+  };
+
   const sections = [
-    { key: 'revision', title: t.revision, data: content.revision },
-    { key: 'impregnation', title: t.impregnation, data: content.impregnation },
-    { key: 'analyse', title: t.analyse, data: content.analyse },
-    { key: 'consolidation', title: t.consolidation, data: content.consolidation },
-    { key: 'evaluation', title: t.evaluation, data: content.evaluation },
+    { key: 'revision', title: t.revision, data: content.revision, duration: durations.revision },
+    { key: 'impregnation', title: t.impregnation, data: content.impregnation, duration: durations.impregnation },
+    { key: 'analyse', title: t.analyse, data: content.analyse, duration: durations.analyse },
+    { key: 'consolidation', title: t.consolidation, data: content.consolidation, duration: durations.consolidation },
+    { key: 'evaluation', title: t.evaluation, data: content.evaluation, duration: durations.evaluation },
   ];
 
   return (
@@ -53,27 +77,58 @@ export function SheetDisplay({ content, formData, language, onDownload, onNewShe
           </div>
         </div>
 
-        {sections.map((section) => (
-          <div key={section.key} className="mb-8 last:mb-0">
-            <h3 className="text-xl font-bold text-blue-700 mb-4 pb-2 border-b-2 border-blue-200">
-              {section.title}
-            </h3>
-            <div className="space-y-4">
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <h4 className="font-semibold text-blue-900 mb-2">{t.activitesMaitre}</h4>
-                <p className="text-gray-800 whitespace-pre-wrap">{section.data.activites_maitre}</p>
-              </div>
-              <div className="bg-green-50 p-4 rounded-lg">
-                <h4 className="font-semibold text-green-900 mb-2">{t.activitesEleve}</h4>
-                <p className="text-gray-800 whitespace-pre-wrap">{section.data.activites_eleve}</p>
-              </div>
-              <div className="bg-amber-50 p-4 rounded-lg">
-                <h4 className="font-semibold text-amber-900 mb-2">{t.contenu}</h4>
-                <p className="text-gray-800 whitespace-pre-wrap">{section.data.contenu}</p>
-              </div>
-            </div>
-          </div>
-        ))}
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-blue-100">
+                <th className="border-2 border-blue-300 px-4 py-3 text-left font-bold text-blue-900 uppercase text-sm">
+                  {language === 'ar' ? 'المراحل' : 'ÉTAPES'}
+                </th>
+                <th className="border-2 border-blue-300 px-4 py-3 text-left font-bold text-blue-900 uppercase text-sm">
+                  {t.activitesMaitre}
+                </th>
+                <th className="border-2 border-blue-300 px-4 py-3 text-left font-bold text-blue-900 uppercase text-sm">
+                  {t.activitesEleve}
+                </th>
+                <th className="border-2 border-blue-300 px-4 py-3 text-left font-bold text-blue-900 uppercase text-sm">
+                  {t.contenu}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {sections.map((section) => (
+                <tr key={section.key} className="hover:bg-blue-50 transition-colors">
+                  <td className="border-2 border-blue-200 px-4 py-4 align-top">
+                    <div className="font-bold text-blue-700 text-base mb-1">
+                      {section.title}
+                    </div>
+                    <div className="text-xs text-gray-600">
+                      {language === 'ar'
+                        ? `${section.duration} ${section.duration === 1 ? 'دقيقة' : 'دقائق'}`
+                        : `${section.duration} min`
+                      }
+                    </div>
+                  </td>
+                  <td className="border-2 border-blue-200 px-4 py-4 align-top bg-blue-50/50">
+                    <p className="text-gray-800 text-sm whitespace-pre-wrap leading-relaxed">
+                      {section.data.activites_maitre}
+                    </p>
+                  </td>
+                  <td className="border-2 border-blue-200 px-4 py-4 align-top">
+                    <p className="text-gray-800 text-sm whitespace-pre-wrap leading-relaxed">
+                      {section.data.activites_eleve}
+                    </p>
+                  </td>
+                  <td className="border-2 border-blue-200 px-4 py-4 align-top bg-gray-50 italic">
+                    <p className="text-gray-700 text-sm whitespace-pre-wrap leading-relaxed">
+                      {section.data.contenu}
+                    </p>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-4">

@@ -122,69 +122,111 @@ function App() {
         .info-item { margin-bottom: 5px; }
         .label { font-weight: bold; color: #374151; }
         .value { color: #6b7280; }
-        .section {
-          margin-bottom: 30px;
-          page-break-inside: avoid;
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 20px;
         }
-        .section-title {
-          font-size: 18px;
+
+        thead tr {
+          background-color: #dbeafe;
+        }
+
+        th {
+          border: 2px solid #93c5fd;
+          padding: 12px;
+          text-align: ${isRtl ? 'right' : 'left'};
+          font-weight: bold;
+          color: #1e3a8a;
+          text-transform: uppercase;
+          font-size: 12px;
+        }
+
+        td {
+          border: 2px solid #bfdbfe;
+          padding: 12px;
+          vertical-align: top;
+          font-size: 12px;
+          line-height: 1.6;
+          text-align: ${isRtl ? 'right' : 'left'};
+        }
+
+        .etape-title {
           font-weight: bold;
           color: #1d4ed8;
-          padding-bottom: 8px;
-          border-bottom: 2px solid #bfdbfe;
-          margin-bottom: 15px;
+          font-size: 14px;
+          margin-bottom: 4px;
         }
-        .activity-box {
-          padding: 15px;
-          margin-bottom: 12px;
-          border-radius: 8px;
+
+        .etape-duration {
+          font-size: 11px;
+          color: #6b7280;
         }
-        .maitre { background-color: #eff6ff; }
-        .eleve { background-color: #f0fdf4; }
-        .contenu { background-color: #fffbeb; }
-        .activity-title {
-          font-weight: bold;
-          margin-bottom: 8px;
+
+        .col-maitre {
+          background-color: rgba(239, 246, 255, 0.5);
         }
-        .maitre .activity-title { color: #1e3a8a; }
-        .eleve .activity-title { color: #14532d; }
-        .contenu .activity-title { color: #78350f; }
-        .activity-content {
-          color: #1f2937;
-          white-space: pre-wrap;
-          line-height: 1.6;
+
+        .col-contenu {
+          background-color: #f9fafb;
+          font-style: italic;
+          color: #4b5563;
         }
         @media print {
-          body { padding: 0; }
-          .section { page-break-inside: avoid; }
+          body { padding: 10px; }
+          table { page-break-inside: auto; }
+          tr { page-break-inside: avoid; page-break-after: auto; }
         }
       </style>
     `;
 
+    // Calculer la durée totale en minutes
+    const getTotalMinutes = (dureeStr: string): number => {
+      const matches = dureeStr.match(/(\d+)/g);
+      if (!matches) return 60;
+
+      if (dureeStr.includes('ساعة') || dureeStr.includes('heure')) {
+        const heures = parseInt(matches[0]);
+        const minutes = matches.length > 1 ? parseInt(matches[1]) : 0;
+        return heures * 60 + minutes;
+      }
+      return parseInt(matches[0]);
+    };
+
+    const totalMinutes = getTotalMinutes(currentFormData.duree);
+
+    const durations = {
+      revision: Math.round(totalMinutes * 0.15),
+      impregnation: Math.round(totalMinutes * 0.20),
+      analyse: Math.round(totalMinutes * 0.30),
+      consolidation: Math.round(totalMinutes * 0.25),
+      evaluation: Math.round(totalMinutes * 0.10),
+    };
+
     const sections = [
-      { title: t.sheet.revision, data: generatedContent.revision },
-      { title: t.sheet.impregnation, data: generatedContent.impregnation },
-      { title: t.sheet.analyse, data: generatedContent.analyse },
-      { title: t.sheet.consolidation, data: generatedContent.consolidation },
-      { title: t.sheet.evaluation, data: generatedContent.evaluation },
+      { key: 'revision', title: t.sheet.revision, data: generatedContent.revision, duration: durations.revision },
+      { key: 'impregnation', title: t.sheet.impregnation, data: generatedContent.impregnation, duration: durations.impregnation },
+      { key: 'analyse', title: t.sheet.analyse, data: generatedContent.analyse, duration: durations.analyse },
+      { key: 'consolidation', title: t.sheet.consolidation, data: generatedContent.consolidation, duration: durations.consolidation },
+      { key: 'evaluation', title: t.sheet.evaluation, data: generatedContent.evaluation, duration: durations.evaluation },
     ];
 
     const sectionsHtml = sections.map(section => `
-      <div class="section">
-        <h3 class="section-title">${section.title}</h3>
-        <div class="activity-box maitre">
-          <div class="activity-title">${t.sheet.activitesMaitre}</div>
-          <div class="activity-content">${section.data.activites_maitre}</div>
-        </div>
-        <div class="activity-box eleve">
-          <div class="activity-title">${t.sheet.activitesEleve}</div>
-          <div class="activity-content">${section.data.activites_eleve}</div>
-        </div>
-        <div class="activity-box contenu">
-          <div class="activity-title">${t.sheet.contenu}</div>
-          <div class="activity-content">${section.data.contenu}</div>
-        </div>
-      </div>
+      <tr>
+        <td>
+          <div class="etape-title">${section.title}</div>
+          <div class="etape-duration">
+            ${isRtl
+              ? `${section.duration} ${section.duration === 1 ? 'دقيقة' : 'دقائق'}`
+              : `${section.duration} min`
+            }
+          </div>
+        </td>
+        <td class="col-maitre">${section.data.activites_maitre}</td>
+        <td>${section.data.activites_eleve}</td>
+        <td class="col-contenu">${section.data.contenu}</td>
+      </tr>
     `).join('');
 
     printWindow.document.write(`
@@ -223,7 +265,20 @@ function App() {
               <div class="value" style="margin-top: 5px;">${currentFormData.objectif_specifique}</div>
             </div>
           </div>
-          ${sectionsHtml}
+
+          <table>
+            <thead>
+              <tr>
+                <th>${language === 'ar' ? 'المراحل' : 'ÉTAPES'}</th>
+                <th>${t.sheet.activitesMaitre}</th>
+                <th>${t.sheet.activitesEleve}</th>
+                <th>${t.sheet.contenu}</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sectionsHtml}
+            </tbody>
+          </table>
         </body>
       </html>
     `);
