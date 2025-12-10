@@ -21,8 +21,8 @@ export function SheetForm({ onSubmit, isGenerating, language }: SheetFormProps) 
 
   // Options pour les activités
   const activitesOptions = language === 'ar'
-    ? ['القراءة', 'الكتابة', 'القواعد', 'التعبير', 'الرياضيات', 'العلوم', 'التاريخ والجغرافيا', 'التربية المدنية', 'التربية الإسلامية', 'التربية الفنية', 'التربية البدنية', 'اللغة الفرنسية']
-    : ['Lecture', 'Écriture', 'Grammaire', 'Conjugaison', 'Orthographe', 'Expression orale/écrite', 'Mathématiques', 'Sciences', 'Histoire-Géographie', 'Éducation civique', 'Éducation islamique', 'Arts plastiques', 'Éducation physique', 'Langue française'];
+    ? ['المحادثة', 'التعبير الشفهي', 'التعبير الكتابي', 'القراءة', 'الخط', 'القواعد', 'الإملاء', 'القرآن', 'الحديث', 'العبادات', 'السيرة', 'التوحيد', 'الأناشيد/المحفوظات']
+    : ['Conversation', 'Expression orale', 'Expression écrite', 'Lecture', 'Calligraphie', 'Grammaire', 'Orthographe', 'Coran', 'Hadith', 'Adorations', 'Biographie prophétique', 'Tawhid', 'Chants/Mémorisations'];
 
   // Options pour la durée
   const dureeOptions = language === 'ar'
